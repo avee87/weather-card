@@ -342,7 +342,7 @@ class WeatherCard extends LitElement {
 
   getUnit(measure) {
     const lengthUnit = this.hass.config.unit_system.length;
-    const attributes = this._config.entity.attributes;
+    const attributes = this.hass.states[this._config.entity].attributes;
     switch (measure) {
       case "air_pressure":
         return attributes.pressure_unit ?? (lengthUnit === "km" ? "hPa" : "inHg");
