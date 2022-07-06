@@ -342,18 +342,18 @@ class WeatherCard extends LitElement {
 
   getUnit(measure) {
     const lengthUnit = this.hass.config.unit_system.length;
-    const atributes = this._config.entity.attributes;
+    const attributes = this._config.entity.attributes;
     switch (measure) {
       case "air_pressure":
-        return atributes.pressure_unit ?? (lengthUnit === "km" ? "hPa" : "inHg");
+        return attributes.pressure_unit ?? (lengthUnit === "km" ? "hPa" : "inHg");
       case "precipitation":
-        return atributes.precipitation_unit ?? (lengthUnit === "km" ? "mm" : "in");
+        return attributes.precipitation_unit ?? (lengthUnit === "km" ? "mm" : "in");
       case "precipitation_probability":
         return "%";
       case "visibility":
-        return atributes.visibility_unit ?? lengthUnit;
+        return attributes.visibility_unit ?? lengthUnit;
       case "wind_speed":
-        return atributes.wind_speed_unit ?? (lengthUnit === "km" ? "km/h" : "mph");
+        return attributes.wind_speed_unit ?? (lengthUnit === "km" ? "km/h" : "mph");
       default:
         return "";
     }
