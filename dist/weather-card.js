@@ -56,7 +56,7 @@ window.customCards.push({
   name: "Weather Card",
   description: "A custom weather card with animated icons.",
   preview: true,
-  documentationURL: "https://github.com/bramkragten/weather-card",
+  documentationURL: "https://github.com/avee87/weather-card",
 });
 
 const fireEvent = (node, type, detail, options) => {
