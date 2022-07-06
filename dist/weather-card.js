@@ -205,7 +205,7 @@ class WeatherCard extends LitElement {
             ]
           : ""}
         ${stateObj.attributes.wind_speed}<span class="unit">
-          ${this.getUnit("length")}/h
+          ${this.getUnit("wind_speed")}
         </span>
       `);
     }
@@ -221,7 +221,7 @@ class WeatherCard extends LitElement {
     if (stateObj.attributes.visibility != null) {
       items.push(html`
         <ha-icon icon="mdi:weather-fog"></ha-icon> ${stateObj.attributes
-          .visibility}<span class="unit"> ${this.getUnit("length")} </span>
+          .visibility}<span class="unit"> ${this.getUnit("visibility")} </span>
       `);
     }
 
@@ -342,17 +342,20 @@ class WeatherCard extends LitElement {
 
   getUnit(measure) {
     const lengthUnit = this.hass.config.unit_system.length;
+    const atributes = this._config.entity.attributes;
     switch (measure) {
       case "air_pressure":
-        return lengthUnit === "km" ? "hPa" : "inHg";
-      case "length":
-        return lengthUnit;
+        return atributes.pressure_unit ?? (lengthUnit === "km" ? "hPa" : "inHg");
       case "precipitation":
-        return lengthUnit === "km" ? "mm" : "in";
+        return atributes.precipitation_unit ?? (lengthUnit === "km" ? "mm" : "in");
       case "precipitation_probability":
         return "%";
+      case "visibility":
+        return atributes.visibility_unit ?? lengthUnit;
+      case "wind_speed":
+        return atributes.wind_speed_unit ?? (lengthUnit === "km" ? "km/h" : "mph");
       default:
-        return this.hass.config.unit_system[measure] || "";
+        return "";
     }
   }
 
