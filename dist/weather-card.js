@@ -48,6 +48,7 @@ const windDirections = [
   "NNW",
   "N",
 ];
+const windDirectionsSet = new Set(windDirections);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
@@ -197,12 +198,12 @@ class WeatherCard extends LitElement {
     }
 
     if (stateObj.attributes.wind_speed != null) {
+      const windBearing = stateObj.attributes.wind_bearing;
+      
       items.push(html`
         <ha-icon icon="mdi:weather-windy"></ha-icon>
-        ${stateObj.attributes.wind_bearing != null
-          ? windDirections[
-              parseInt((stateObj.attributes.wind_bearing + 11.25) / 22.5)
-            ]
+        ${windBearing != null
+          ? this.getWindDirection(windBearing)
           : ""}
         ${stateObj.attributes.wind_speed}<span class="unit">
           ${this.getUnit("wind_speed")}
@@ -326,6 +327,15 @@ class WeatherCard extends LitElement {
           )}
       </div>
     `;
+  }
+
+  getWindDirection(windBearing) {
+    if (windDirectionsSet.has(windBearing)) {
+      return windBearing;
+    }
+    return windDirections[
+      parseInt((windBearing + 11.25) / 22.5)
+    ];
   }
 
   getWeatherIcon(condition, sun) {
