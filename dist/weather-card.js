@@ -191,39 +191,48 @@ class WeatherCard extends LitElement {
     const items = [];
 
     if (stateObj.attributes.humidity != null) {
-      items.push(html`
-        <ha-icon icon="mdi:water-percent"></ha-icon>
-        ${stateObj.attributes.humidity}<span class="unit"> % </span>
-      `);
+      items.push(
+        this.renderItem(
+          "mdi:water-percent",
+          stateObj.attributes.humidity,
+          this.getUnit("humidity"),
+        ),
+      );
     }
 
     if (stateObj.attributes.wind_speed != null) {
       const windBearing = stateObj.attributes.wind_bearing;
+      const windDirection = windBearing != null
+        ? this.getWindDirection(windBearing)
+        : "";
       
-      items.push(html`
-        <ha-icon icon="mdi:weather-windy"></ha-icon>
-        ${windBearing != null
-          ? this.getWindDirection(windBearing)
-          : ""}
-        ${stateObj.attributes.wind_speed}<span class="unit">
-          ${this.getUnit("wind_speed")}
-        </span>
-      `);
+      items.push(
+        this.renderItem(
+          "mdi:weather-windy",
+          windDirection + " " + stateObj.attributes.wind_speed,
+          this.getUnit("wind_speed"),
+        ),
+      );
     }
 
     if (stateObj.attributes.pressure != null) {
-      items.push(html`
-        <ha-icon icon="mdi:gauge"></ha-icon>
-        ${stateObj.attributes.pressure}
-        <span class="unit"> ${this.getUnit("air_pressure")} </span>
-      `);
+      items.push(
+        this.renderItem(
+          "mdi:gauge",
+          stateObj.attributes.pressure,
+          this.getUnit("air_pressure"),
+        ),
+      );
     }
 
     if (stateObj.attributes.visibility != null) {
-      items.push(html`
-        <ha-icon icon="mdi:weather-fog"></ha-icon> ${stateObj.attributes
-          .visibility}<span class="unit"> ${this.getUnit("visibility")} </span>
-      `);
+      items.push(
+        this.renderItem(
+          "mdi:weather-fog",
+          stateObj.attributes.visibility,
+          this.getUnit("visibility"),
+        ),
+      );
     }
 
     const sun = this.hass.states['sun.sun'];
@@ -241,14 +250,8 @@ class WeatherCard extends LitElement {
         items.push(html`<div />`);
       }
 
-      items.push(html`
-        <ha-icon icon="mdi:weather-sunset-up"></ha-icon>
-        ${next_rising}
-      `);
-      items.push(html`
-        <ha-icon icon="mdi:weather-sunset-down"></ha-icon>
-        ${next_setting}
-      `);
+      items.push(this.renderItem("mdi:weather-sunset-up", next_rising));
+      items.push(this.renderItem("mdi:weather-sunset-down", next_setting));
     }
 
     const listItems = items.map(item => html`<li>${item}</li>`);
@@ -257,6 +260,14 @@ class WeatherCard extends LitElement {
       <ul class="variations ${this.numberElements > 1 ? "spacer" : ""}">
         ${listItems}
       </ul>
+    `;
+  }
+
+  renderItem(icon, value, unit) {
+    return html`
+      <ha-icon icon="${icon}"></ha-icon>
+      ${value}
+      ${unit != null ? html`<span class="unit"> ${unit} </span>` : ""}
     `;
   }
 
@@ -356,6 +367,8 @@ class WeatherCard extends LitElement {
     switch (measure) {
       case "air_pressure":
         return attributes.pressure_unit ?? (lengthUnit === "km" ? "hPa" : "inHg");
+      case "humidity":
+        return "%";
       case "precipitation":
         return attributes.precipitation_unit ?? (lengthUnit === "km" ? "mm" : "in");
       case "precipitation_probability":
