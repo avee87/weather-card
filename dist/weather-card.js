@@ -3,30 +3,29 @@ const html = LitElement.prototype.html;
 const css = LitElement.prototype.css;
 
 const weatherIconsDay = {
-  clear: "day",
-  "clear-night": "night",
+  clear: "clear-day",
+  "clear-night": "clear-night",
   cloudy: "cloudy",
-  fog: "cloudy",
-  hail: "rainy-7",
-  lightning: "thunder",
-  "lightning-rainy": "thunder",
-  partlycloudy: "cloudy-day-3",
-  pouring: "rainy-6",
-  rainy: "rainy-5",
-  snowy: "snowy-6",
-  "snowy-rainy": "rainy-7",
-  sunny: "day",
-  windy: "cloudy",
-  "windy-variant": "cloudy-day-3",
+  fog: "fog",
+  hail: "hail",
+  lightning: "thunderstorms",
+  "lightning-rainy": "thunderstorms-rain",
+  partlycloudy: "partly-cloudy-day",
+  pouring: "extreme-rain",
+  rainy: "rain",
+  snowy: "snow",
+  "snowy-rainy": "sleet",
+  sunny: "clear-day",
+  windy: "wind",
+  "windy-variant": "wind",
   exceptional: "!!",
 };
 
 const weatherIconsNight = {
   ...weatherIconsDay,
-  clear: "night",
-  sunny: "night",
-  partlycloudy: "cloudy-night-3",
-  "windy-variant": "cloudy-night-3",
+  clear: "clear-night",
+  sunny: "clear-night",
+  partlycloudy: "partly-cloudy-night",
 };
 
 const windDirections = [
@@ -353,7 +352,7 @@ class WeatherCard extends LitElement {
     return `${
       this._config.icons
         ? this._config.icons
-        : "https://cdn.jsdelivr.net/gh/avee87/weather-card/dist/icons/"
+        : "https://cdn.jsdelivr.net/gh/avee87/weather-card/dist/icons_new/"
     }${
       sun && sun.state == "below_horizon"
         ? weatherIconsNight[condition]
