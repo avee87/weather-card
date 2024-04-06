@@ -251,7 +251,7 @@ class WeatherCard extends LitElement {
           ? this.renderForecast(
               this._forecastEvent || {
                 forecast: stateObj.attributes.forecast,
-                type: this._config.hourly_forecast ? 'hourly' : 'daily',
+                type: this._config.forecast_type,
               },
               lang
             )
