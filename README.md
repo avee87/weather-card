@@ -69,7 +69,7 @@ entity: weather.yourweatherentity
 current: true
 details: false
 forecast: true
-hourly_forecast: false
+forecast_type: daily
 number_of_forecasts: 5
 ```
 
