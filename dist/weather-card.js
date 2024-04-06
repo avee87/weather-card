@@ -131,6 +131,11 @@ class WeatherCard extends LitElement {
           },
         },
         { name: 'number_of_forecasts', default: 5, selector: { number: {} } },
+        {
+          name: 'show_forecast_wind_speed',
+          default: true,
+          selector: { boolean: {} },
+        },
       ],
     };
   }
@@ -380,69 +385,117 @@ class WeatherCard extends LitElement {
     }
 
     this.numberElements++;
+
+    const forecastPoints = forecast.forecast
+      .slice(
+        0,
+        this._config.number_of_forecasts ? this._config.number_of_forecasts : 5
+      )
+      .map((daily) => this.renderForecastPoint(daily));
+
     return html`
       <div class="forecast clear ${this.numberElements > 1 ? 'spacer' : ''}">
-        ${forecast.forecast
-          .slice(
-            0,
-            this._config.number_of_forecasts
-              ? this._config.number_of_forecasts
-              : 5
-          )
-          .map(
-            (daily) => html`
-              <div class="day">
-                <div class="dayname">
-                  ${forecast.type === 'hourly'
-                    ? new Date(daily.datetime).toLocaleTimeString(lang, {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })
-                    : new Date(daily.datetime).toLocaleDateString(lang, {
-                        weekday: 'short',
-                      })}
-                </div>
-                <i
-                  class="icon"
-                  style="background: none, url('${this.getWeatherIcon(
-                    daily.condition.toLowerCase()
-                  )}') no-repeat; background-size: contain"
-                ></i>
-                <div class="highTemp">
-                  ${daily.temperature}${this.getUnit('temperature')}
-                </div>
-                ${daily.templow !== undefined
-                  ? html`
-                      <div class="lowTemp">
-                        ${daily.templow}${this.getUnit('temperature')}
-                      </div>
-                    `
-                  : ''}
-                ${!this._config.hide_precipitation &&
-                daily.precipitation !== undefined &&
-                daily.precipitation !== null
-                  ? html`
-                      <div class="precipitation">
-                        ${Math.round(daily.precipitation * 10) / 10}
-                        ${this.getUnit('precipitation')}
-                      </div>
-                    `
-                  : ''}
-                ${!this._config.hide_precipitation &&
-                daily.precipitation_probability !== undefined &&
-                daily.precipitation_probability !== null
-                  ? html`
-                      <div class="precipitation_probability">
-                        ${Math.round(daily.precipitation_probability)}
-                        ${this.getUnit('precipitation_probability')}
-                      </div>
-                    `
-                  : ''}
-              </div>
-            `
-          )}
+        ${forecastPoints}
       </div>
     `;
+  }
+
+  renderForecastPoint(daily) {
+    const items = [];
+
+    items.push(
+      html`
+        <div class="dayname">
+          ${forecast.type === 'hourly'
+            ? new Date(daily.datetime).toLocaleTimeString(lang, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : new Date(daily.datetime).toLocaleDateString(lang, {
+                weekday: 'short',
+              })}
+        </div>
+      `
+    );
+
+    items.push(html`
+      <i
+        class="icon"
+        style="background: none, url('${this.getWeatherIcon(
+          daily.condition.toLowerCase()
+        )}') no-repeat; background-size: contain"
+      ></i>
+    `);
+
+    items.push(html`
+      <div class="highTemp">
+        ${daily.temperature}${this.getUnit('temperature')}
+      </div>
+    `);
+
+    if (daily.templow !== undefined) {
+      items.push(
+        html`
+          <div class="lowTemp">
+            ${daily.templow}${this.getUnit('temperature')}
+          </div>
+        `
+      );
+    }
+
+    if (
+      !this._config.hide_precipitation &&
+      daily.precipitation !== undefined &&
+      daily.precipitation !== null
+    ) {
+      items.push(
+        html`
+          <div class="precipitation">
+            ${Math.round(daily.precipitation * 10) / 10}
+            ${this.getUnit('precipitation')}
+          </div>
+        `
+      );
+    }
+
+    if (
+      !this._config.hide_precipitation &&
+      daily.precipitation_probability !== undefined &&
+      daily.precipitation_probability !== null
+    ) {
+      items.push(html`
+        <div class="precipitation_probability">
+          ${Math.round(daily.precipitation_probability)}
+          ${this.getUnit('precipitation_probability')}
+        </div>
+      `);
+    }
+
+    if (this._config.show_forecast_wind_speed && daily.wind_speed != null) {
+      const degrees =
+        daily.wind_bearing in windDirections
+          ? windDirections.indexOf(daily.wind_bearing) * 22.5
+          : daily.wind_bearing;
+      items.push(
+        html`
+          <div class="wind">
+            <span
+              class="wind-direction-arrow"
+              style="transform: rotate(${degrees}deg)"
+            >
+              <ha-icon icon="mdi:arrow-down-thin"></ha-icon>
+            </span>
+            <span class="windspeed">
+              ${Math.round(daily.wind_speed)}<span class="unit">
+                ${this.getUnit('wind_speed')}
+              </span>
+            </span>
+          </div>
+        `
+      );
+    }
+
+    return html`<div class="day">${items}</div>`;
   }
 
   getWindDirection(windBearing) {
@@ -638,6 +691,7 @@ class WeatherCard extends LitElement {
         color: var(--secondary-text-color);
       }
 
+      .wind,
       .precipitation {
         color: var(--primary-text-color);
         font-weight: 300;
@@ -673,6 +727,14 @@ class WeatherCard extends LitElement {
         left: 6em;
         word-wrap: break-word;
         width: 30%;
+      }
+
+      .windspeed {
+        white-space: nowrap;
+      }
+
+      .wind-direction-arrow {
+        display: inline-block;
       }
     `;
   }
