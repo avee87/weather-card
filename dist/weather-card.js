@@ -391,7 +391,7 @@ class WeatherCard extends LitElement {
         0,
         this._config.number_of_forecasts ? this._config.number_of_forecasts : 5
       )
-      .map((point) => this.renderForecastPoint(forecast, point));
+      .map((point) => this.renderForecastPoint(forecast, point, lang));
 
     return html`
       <div class="forecast clear ${this.numberElements > 1 ? 'spacer' : ''}">
@@ -400,7 +400,7 @@ class WeatherCard extends LitElement {
     `;
   }
 
-  renderForecastPoint(forecast, daily) {
+  renderForecastPoint(forecast, daily, lang) {
     const items = [];
 
     items.push(
