@@ -472,10 +472,9 @@ class WeatherCard extends LitElement {
     }
 
     if (this._config.show_forecast_wind_speed && daily.wind_speed != null) {
-      const degrees =
-        daily.wind_bearing in windDirections
-          ? windDirections.indexOf(daily.wind_bearing) * 22.5
-          : daily.wind_bearing;
+      const degrees = windDirections.includes(daily.wind_bearing)
+        ? windDirections.indexOf(daily.wind_bearing) * 22.5
+        : daily.wind_bearing;
       items.push(
         html`
           <div class="wind">
